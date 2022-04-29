@@ -30,7 +30,12 @@ const addDepartment = () => {
             name: 'name',
             type: 'input',
             message: 'What is the name of the department that you would like to add?',
-        }
+        },
+        {
+            name:'id',
+            type: 'input',
+            message: 'What is the department ID?',
+        },
     ])
         .then(answer => {
             let query = db.query(
@@ -47,11 +52,53 @@ const addDepartment = () => {
 }
 
 const addRole = () => {
-
+    inquirer.prompt([
+        {
+        name:'title',
+        type: 'input',
+        message: 'What is the job title?',
+        },
+        {
+            name: 'id',
+            type: 'input',
+            message: 'What is the role ID?',
+        },
+        {
+            name:'department',
+            type:'input',
+            message: 'What department does the role belong to?',
+        },
+        {
+            name:'salary',
+            type:'input',
+            message:'What is the salary of the role?',
+        },
+    ])
 }
 
 const addEmployee = () => {
-
+    inquirer.prompt([
+        {
+            name: 'first',
+            type: 'input',
+            message: 'What is the employees first name?',
+        },
+        {
+            name: 'last',
+            type: 'input',
+            message: 'What is the employees last name?',
+        },
+        {
+            name: 'role',
+            type: 'input',
+            message: 'What is the employees role?',
+        },
+        {
+            name:'manager',
+            type: 'input',
+            message: 'Who is the employees manager?'
+        },
+    ])
 }
 
 const viewDepartments = () => {
