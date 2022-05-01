@@ -8,7 +8,7 @@ const mainMenu = () => {
             name: 'choice',
             type: 'list',
             message: 'What would you like to do?',
-            choices: ['Add Department', 'Add Role', 'Add Employee', 'View Departments', 'View Roles', 'View Employees',]
+            choices: ['Add Department', 'Add Role', 'Add Employee', 'View Departments', 'View Roles', 'View Employees', 'Finish']
         },
     ])
         .then(answer => {
@@ -20,6 +20,12 @@ const mainMenu = () => {
                 addEmployee();
             } else if (answer.choice === 'View Departments') {
                 viewDepartments();
+            } else if (answer.choice === 'View Roles') {
+                viewRoles();
+            } else if (answer.choice === 'View Employees') {
+                viewEmployees();
+            } else {
+                return;
             }
         }) 
 }
@@ -38,6 +44,7 @@ const addDepartment = () => {
         },
     ])
         .then(answer => {
+    
             let query = db.query(
                 "INSERT INTO department SET ?",
                 {
@@ -59,11 +66,6 @@ const addRole = () => {
         message: 'What is the job title?',
         },
         {
-            name: 'id',
-            type: 'input',
-            message: 'What is the role ID?',
-        },
-        {
             name:'department',
             type:'input',
             message: 'What department does the role belong to?',
@@ -73,7 +75,27 @@ const addRole = () => {
             type:'input',
             message:'What is the salary of the role?',
         },
+        {
+            name: 'id',
+            type: 'input',
+            message: 'What is the role ID?',
+        },
     ])
+        .then(answer => {
+            let query = db.query(
+                "INSERT INTO role SET ?",
+                {
+                    title: answer.title,
+                    salary: answer.salary,
+                    department: answer.department,
+                    role_id: answer.id
+                },
+                function (err, res) {
+                    console.log(res.affectedRows + " role added!\n");
+                    mainMenu();
+                }
+            );
+        })
 }
 
 const addEmployee = () => {
@@ -99,6 +121,21 @@ const addEmployee = () => {
             message: 'Who is the employees manager?'
         },
     ])
+    .then(answers => {
+        let query = db.query(
+            "INSERT INTO employee SET ?",
+            {
+                first_name: answers.first,
+                last_name: answers.last,
+                role_id: answers.role,
+                manager: answers.manager,
+            },
+            function (err, res) {
+                console.log(res.affectedRows +  " employee added!\n");
+                mainMenu();
+            }
+        );
+    })
 }
 
 const viewDepartments = () => {
@@ -110,6 +147,26 @@ const viewDepartments = () => {
         }
     );
 }
+
+const viewRoles = () => {
+    let query = db.query(
+        "SELECT * FROM role",
+        function (err, res) {
+            console.table(res);
+            mainMenu();
+        }
+    );
+};
+
+const viewEmployees = () => {
+    let query = db.query(
+        "SELECT * FROM employee",
+        function (err, res) {
+            console.table(res);
+            mainMenu();
+        }
+    );
+};
 
 
 mainMenu();
