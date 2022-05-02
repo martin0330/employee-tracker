@@ -7,18 +7,18 @@ CREATE TABLE department (
     name VARCHAR(30) NOT NULL
 );
 
-CREATE TABLE role (
+CREATE TABLE roles (
     id INTEGER AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(30) NOT NULL,
     salary DECIMAL(10, 2) NOT NULL,
-    department VARCHAR(30) NOT NULL,
-    role_id INTEGER NOT NULL
+    department INTEGER NOT NULL,
+    role INTEGER NOT NULL
 );
 
 CREATE TABLE employee (
     id INTEGER AUTO_INCREMENT PRIMARY KEY,
     first_name VARCHAR(30) NOT NULL,
     last_name VARCHAR(30) NOT NULL,
-    role VARCHAR(30) NOT NULL,
+    role_id VARCHAR(30) NOT NULL,
     manager VARCHAR(30) NOT NULL
 );

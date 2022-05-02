@@ -8,7 +8,7 @@ const mainMenu = () => {
             name: 'choice',
             type: 'list',
             message: 'What would you like to do?',
-            choices: ['Add Department', 'Add Role', 'Add Employee', 'View Departments', 'View Roles', 'View Employees', 'Finish']
+            choices: ['Add Department', 'Add Role', 'Add Employee', 'View Departments', 'View Roles', 'View Employees',  'Finish']
         },
     ])
         .then(answer => {
@@ -24,12 +24,15 @@ const mainMenu = () => {
                 viewRoles();
             } else if (answer.choice === 'View Employees') {
                 viewEmployees();
+            // } else if (answer.choice === 'Update Employee') {
+            //     updateEmployee();
             } else {
                 return;
             }
         }) 
 }
 
+// add department function and questions
 const addDepartment = () => {
     inquirer.prompt([
         {
@@ -58,6 +61,7 @@ const addDepartment = () => {
         })
 }
 
+// add role function and questions
 const addRole = () => {
     inquirer.prompt([
         {
@@ -83,12 +87,12 @@ const addRole = () => {
     ])
         .then(answer => {
             let query = db.query(
-                "INSERT INTO role SET ?",
+                "INSERT INTO roles SET ?",
                 {
                     title: answer.title,
                     salary: answer.salary,
                     department: answer.department,
-                    role_id: answer.id
+                    role: answer.id,
                 },
                 function (err, res) {
                     console.log(res.affectedRows + " role added!\n");
@@ -98,6 +102,7 @@ const addRole = () => {
         })
 }
 
+//add employee function and questions
 const addEmployee = () => {
     inquirer.prompt([
         {
@@ -138,6 +143,10 @@ const addEmployee = () => {
     })
 }
 
+// const updateEmployee = () => {
+
+// }
+
 const viewDepartments = () => {
     let query = db.query(
         "SELECT * FROM department",
@@ -150,7 +159,7 @@ const viewDepartments = () => {
 
 const viewRoles = () => {
     let query = db.query(
-        "SELECT * FROM role",
+        "SELECT * FROM roles",
         function (err, res) {
             console.table(res);
             mainMenu();
@@ -160,7 +169,8 @@ const viewRoles = () => {
 
 const viewEmployees = () => {
     let query = db.query(
-        "SELECT * FROM employee",
+        `SELECT first_name, last_name, role_id, manager, salary, role
+        FROM employee, roles`,
         function (err, res) {
             console.table(res);
             mainMenu();
