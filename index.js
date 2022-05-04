@@ -8,7 +8,7 @@ const mainMenu = () => {
             name: 'choice',
             type: 'list',
             message: 'What would you like to do?',
-            choices: ['Add Department', 'Add Role', 'Add Employee', 'View Departments', 'View Roles', 'View Employees',  'Finish']
+            choices: ['Add Department', 'Add Role', 'Add Employee', 'View Departments', 'View Roles', 'View Employees','Update Employee', ]
         },
     ])
         .then(answer => {
@@ -24,8 +24,8 @@ const mainMenu = () => {
                 viewRoles();
             } else if (answer.choice === 'View Employees') {
                 viewEmployees();
-            // } else if (answer.choice === 'Update Employee') {
-            //     updateEmployee();
+            } else if (answer.choice === 'Update Employee') {
+                updateEmployee();
             } else {
                 return;
             }
@@ -79,11 +79,6 @@ const addRole = () => {
             type:'input',
             message:'What is the salary of the role?',
         },
-        {
-            name: 'id',
-            type: 'input',
-            message: 'What is the role ID?',
-        },
     ])
         .then(answer => {
             let query = db.query(
@@ -91,8 +86,7 @@ const addRole = () => {
                 {
                     title: answer.title,
                     salary: answer.salary,
-                    department: answer.department,
-                    role: answer.id,
+                    department_id: answer.department
                 },
                 function (err, res) {
                     console.log(res.affectedRows + " role added!\n");
@@ -118,12 +112,12 @@ const addEmployee = () => {
         {
             name: 'role',
             type: 'input',
-            message: 'What is the employees role?',
+            message: 'What is the employees role id?',
         },
         {
             name:'manager',
             type: 'input',
-            message: 'Who is the employees manager?'
+            message: 'What is the employees manager id?'
         },
     ])
     .then(answers => {
@@ -133,7 +127,7 @@ const addEmployee = () => {
                 first_name: answers.first,
                 last_name: answers.last,
                 role_id: answers.role,
-                manager: answers.manager,
+                manager_id: answers.manager,
             },
             function (err, res) {
                 console.log(res.affectedRows +  " employee added!\n");
@@ -143,9 +137,55 @@ const addEmployee = () => {
     })
 }
 
-// const updateEmployee = () => {
-
-// }
+const updateEmployee = () => {
+    inquirer.prompt([
+        {
+            name: 'id',
+            type:'input',
+            message: 'What is the employees ID?'
+        },
+        {
+            name: 'first',
+            type: 'input',
+            message: 'What is the employees new first name?',
+        },
+        {
+            name: 'last',
+            type: 'input',
+            message: 'What is the employees new last name?',
+        },
+        {
+            name: 'role',
+            type: 'input',
+            message: 'What is the employees new role id?',
+        },
+        {
+            name:'manager',
+            type: 'input',
+            message: 'What is the employees new manager id?'
+        },
+    ])
+    .then(answers => {
+        let query = db.query(
+            "UPDATE employee SET ? WHERE ?",
+            [
+            {
+                first_name: answers.first,
+                last_name: answers.last,
+                role_id: answers.role,
+                manager_id: answers.manager,
+            },
+            {
+                id: answers.id
+            },
+        ],
+            function (err, res) {
+                console.log(res.affectedRows +  " employee added!\n");
+                mainMenu();
+            }
+        );
+    })
+}
 
 const viewDepartments = () => {
     let query = db.query(
@@ -169,8 +209,7 @@ const viewRoles = () => {
 
 const viewEmployees = () => {
     let query = db.query(
-        `SELECT first_name, last_name, role_id, manager, salary, role
-        FROM employee, roles`,
+        "SELECT employee.id, employee.first_name, employee.last_name, roles.title, department.name AS department, roles.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager FROM employee LEFT JOIN roles on employee.role_id = roles.id LEFT JOIN department on roles.department_id = department.id LEFT JOIN employee manager on manager.id = employee.manager_id;",
         function (err, res) {
             console.table(res);
             mainMenu();
